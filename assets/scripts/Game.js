@@ -1,3 +1,4 @@
+const Clouds = require('Clouds');
 
 cc.Class({
     extends: cc.Component,
@@ -33,6 +34,11 @@ cc.Class({
             default: null,
             type: cc.Node
         },
+        // clouds节点
+        clouds: {
+            default: null,
+            type: Clouds
+        },
         // score label 的引用
         scoreDisplay: {
             default: null,
@@ -42,7 +48,27 @@ cc.Class({
         scoreAudio: {
             default: null,
             type: cc.AudioClip
-        }
+        },
+        controlHintLabel: {
+            default: null,
+            type: cc.Label
+        },
+        keyboardHint: {
+            default: '',
+            multiline: true
+        },
+        touchHint: {
+            default: '',
+            multiline: true
+        },
+        btnNode: {
+            default: null,
+            type: cc.Node
+        },
+        gameOverNode: {
+            default: null,
+            type: cc.Node
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -50,17 +76,52 @@ cc.Class({
     onLoad () {
         // 获取地平面的 y 轴坐标
         this.groundY = this.ground.y + this.ground.height/2;
-        //标志位,控制一次只能有一个障碍物在移动
-        this.flag = true;
-        // 生成一个新的障碍物
-        this.obstacle = this.spawnNewObject();
         // 初始化计分
         this.score = 0;
         //通过设置标志位,使得恐龙躲开仙人掌时只能加一次分
         this.flag = true;
+
+        // initialize control hint
+        var hintText = cc.sys.isMobile ? this.touchHint : this.keyboardHint;
+        this.controlHintLabel.string = hintText;
+
+        // init game state
+        this.enabled = false;
+
+        //初始化恐龙位置
+        this.dinosaur.setPosition(cc.v2(-this.node.width*3/8, this.groundY+this.dinosaur.height/2));
+        //初始化障碍物
+        this.obstacle = null;
     },
 
-    spawnNewObject: function() {
+    onStartGame: function () {
+        // 初始化计分
+        this.resetScore();
+          // set button and gameover text out of screen
+        this.btnNode.active = false;
+        this.gameOverNode.active = false;
+        // reset player position and move speed
+        this.dinosaur.setPosition(cc.v2(-this.node.width*3/8, this.groundY+this.dinosaur.height/2));
+        // 云朵开始运动
+        this.clouds.enabled = true;
+        // 地面也开始运动
+        this.ground.getComponent('Ground').enabled = true;
+        // 把停留在GameOver那一刻的障碍物清除掉
+        if(this.obstacle){
+            this.obstacle.destroy();
+        }
+        //spawn obstacle
+        this.obstacle = this.spawnNewObstacle();
+        // set game state to running
+        this.enabled = true;
+    },
+
+    resetScore: function () {
+        this.score = 0;
+        this.scoreDisplay.string = 'Score: ' + this.score.toString();
+    },
+
+    spawnNewObstacle: function() {
         // 使用给定的模板在场景中生成一个新节点
         var newObstacle = new Array();
         newObstacle[0] = cc.instantiate(this.cactusPrefab_1);
@@ -110,11 +171,11 @@ cc.Class({
         if(this.obstacle.isValid == true){
             // 如果期间有物体正在移动,只允许有一个正在移动
             // 当物体移动出场景时
-            if(this.obstacle.x <= (-Math.ceil(this.node.width)||-Math.floor(this.node.width))){         
+            if(this.obstacle.x <= (-Math.round(this.node.width)||-Math.ceil(this.node.width)||-Math.floor(this.node.width))){         
                 //销毁障碍物
                 this.obstacle.destroy();
                 //重新渲染新物体
-                this.obstacle = this.spawnNewObject();
+                this.obstacle = this.spawnNewObstacle();
                 //当仙人掌完全移出场景时,才把标志位设为true
                 this.flag = true;
             }
@@ -124,8 +185,7 @@ cc.Class({
                 //标志位设为false,则恐龙成功躲避仙人掌时只能加一次分
                 this.flag = false;
                 this.gainScore();
-            }
-            
-        }      
+            } 
+        }       
     },
 });

@@ -9,17 +9,21 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad () {
+        this.enabled = false;
+    },
 
     start () {
 
     },
 
     update (dt) {
-        // 根据当前速度更新云朵的位置
-        this.node.x -= this.xSpeed * dt;
-        if(this.node.x <= -this.node.parent.width){
-            this.node.x = this.node.parent.width;
+        if(this.enabled == true){
+            // 根据当前速度更新云朵的位置
+            this.node.x -= this.xSpeed * dt;
+            if(this.node.x <= -this.node.parent.width){
+                this.node.x = this.node.parent.width;
+            }
         }
     },
 });

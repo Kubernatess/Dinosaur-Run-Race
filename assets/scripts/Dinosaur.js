@@ -24,10 +24,18 @@ cc.Class({
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyPress, this);
         //设置标志位,限制恐龙连跳两下
         this.flag = true;
+
+        // init game state
+        this.enabled = false;
     },
 
     start () {
 
+    },
+
+    startMoveAt: function (pos) {
+        this.enabled = true;
+        this.node.setPosition(pos);
     },
 
     setJumpAction: function () {
@@ -57,13 +65,16 @@ cc.Class({
     },
 
     update (dt) {
-        //在空中的时候,阻止连按空格键
-        if(this.node.y > this.initY){
-            this.flag = false;
+        if(this.enabled == true){
+            //在空中的时候,阻止连按空格键
+            if(this.node.y > this.initY){
+                this.flag = false;
+            }
+            // 到了地面以后才能跳第二次
+            if(Math.ceil(this.node.y) == this.initY || Math.floor(this.node.y) == this.initY){
+                this.flag = true;
+            }        
         }
-        //-177表示地面,到了地面以后才能跳第二次
-        if(Math.ceil(this.node.y) == this.initY || Math.floor(this.node.y) == this.initY){
-            this.flag = true;
-        }
+        
     },
 });

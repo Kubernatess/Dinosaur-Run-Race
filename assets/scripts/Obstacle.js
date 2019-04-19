@@ -37,11 +37,11 @@ cc.Class({
                 //销毁蛋糕
                 this.node.destroy();
                 //重新渲染新物体
-                this.game.obstacle = this.game.spawnNewObject();
+                this.game.obstacle = this.game.spawnNewObstacle();
             }
             //否则如果时仙人掌,则GameOver
             else{
-                cc.log("GameOver");
+                this.gameOver();
             }  
         }
         
@@ -50,4 +50,14 @@ cc.Class({
             this.flag = true;
         }
     },
+
+    gameOver: function () {
+        this.game.gameOverNode.active = true;
+        this.game.ground.getComponent('Ground').enabled = false;
+        this.game.dinosaur.getComponent('Dinosaur').enabled = false;
+        this.game.clouds.enabled = false;
+        this.node.stopAllActions();
+        //this.currentStar.destroy();
+        this.game.btnNode.active = true;
+    }
 });
