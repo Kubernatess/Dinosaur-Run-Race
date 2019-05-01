@@ -1,10 +1,8 @@
-
 cc.Class({
     extends: cc.Component,
 
     properties: {
-        // 仙人掌、蛋糕和恐龙之间的距离小于这个数值时，就会完成收集
-        pickRadius: 0,
+        
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -12,6 +10,22 @@ cc.Class({
     onLoad () {
         //通过设置标志位,使得恐龙捡到蛋糕时只能加一次分
         this.flag = true;
+        // 仙人掌、蛋糕和恐龙之间的距离小于这个数值时，就会完成收集
+        this.pickRadius = 0;
+        //按照尺寸比例计算pickRadius
+        if(this.node.name == 'cake'){
+            this.pickRadius = 70*this.node.parent.width/960;
+        }
+        else if(this.node.name == 'Cactus1'){
+            this.pickRadius = 100*this.node.parent.width/960;
+        }
+        else if(this.node.name == 'Cactus2'){
+            this.pickRadius = 70*this.node.parent.width/960;
+        }
+        else if(this.node.name == 'Cactus3'){
+            this.pickRadius = 85*this.node.parent.width/960;
+        }
+        cc.log(this.pickRadius);
     },
 
     getDinosaurDistance: function () {
@@ -53,10 +67,11 @@ cc.Class({
 
     gameOver: function () {
         this.game.gameOverNode.active = true;
-        this.game.ground.getComponent('Ground').enabled = false;
-        this.game.dinosaur.getComponent('Dinosaur').enabled = false;
-        this.game.clouds.enabled = false;
+        this.game.ground.getComponent('Ground').state = false;
+        this.game.dinosaur.getComponent('Dinosaur').state = false;
+        this.game.clouds.state = false;
         this.node.stopAllActions();
+        this.game.dinosaur.getComponent('Dinosaur').onDestroy();
         //this.currentStar.destroy();
         this.game.btnNode.active = true;
     }

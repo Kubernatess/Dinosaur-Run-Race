@@ -2,28 +2,21 @@
 cc.Class({
     extends: cc.Component,
 
-    properties: {
-        // 地面当前水平方向速度
-        xSpeed: 0,
-    },
-
-    // LIFE-CYCLE CALLBACKS:
-
     onLoad () {
-        this.enabled = false;
+        this.state = false;
+        // 地面当前水平方向速度
+        this.xSpeed = this.node.parent.width*2/5;
     },
 
-    start () {
-
-    },
 
     update (dt) {
-        if(this.enabled == true){
+        if(this.state == true){
             // 根据当前速度更新云朵的位置
             this.node.x -= this.xSpeed * dt;
             if(this.node.x <= -this.node.parent.width){
                 this.node.x = this.node.parent.width;
             }
+
         }
     },
 });

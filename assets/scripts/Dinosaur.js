@@ -3,39 +3,60 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        // 主角跳跃高度
-        jumpHeight: 0,
         // 主角跳跃持续时间
         jumpDuration: 0,
+        // 主角跳跃高度
+        jumpHeight: 0,
         // 跳跃音效资源
         jumpAudio: {
             default: null,
             type: cc.AudioClip
         },
-        
     },
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
         // 保存初始y的值
-        this.initY = this.node.y;
-        // 初始化键盘输入监听
-        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyPress, this);
+        this.initY = Math.round(this.node.y);
+        
         //设置标志位,限制恐龙连跳两下
         this.flag = true;
-
+        
         // init game state
-        this.enabled = false;
+        this.state = false;
+
+        //根据不同尺寸 设置恐龙大小
+        this.node.setScale(this.node.parent.width/960);
+        // 设置锚点的Y轴坐标
+        this.node.anchorY=0;
+        
+        //按照尺寸比例计算jumpHeight、jumpDuration
+        this.jumpHeight = this.jumpHeight*this.node.parent.width/960;
+        //this.jumpDuration = 0.3*this.node.parent.width/960;
+    },
+
+    init () {
+        // set game state to running
+        this.state = true;
+        // 初始化键盘输入监听
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyPress, this);
+
+        var touchReceiver = cc.Canvas.instance.node;
+        touchReceiver.on('touch', this.setJumpAction, this);
+        
+    },
+
+    onDestroy () {
+        // 取消键盘输入监听
+        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyPress, this);
+        
+        var touchReceiver = cc.Canvas.instance.node;
+        touchReceiver.off('touch', this.setJumpAction, this);
     },
 
     start () {
 
-    },
-
-    startMoveAt: function (pos) {
-        this.enabled = true;
-        this.node.setPosition(pos);
     },
 
     setJumpAction: function () {
@@ -65,15 +86,15 @@ cc.Class({
     },
 
     update (dt) {
-        if(this.enabled == true){
+        if(this.state == true){
             //在空中的时候,阻止连按空格键
             if(this.node.y > this.initY){
                 this.flag = false;
             }
             // 到了地面以后才能跳第二次
-            if(Math.ceil(this.node.y) == this.initY || Math.floor(this.node.y) == this.initY){
+            if( (Math.ceil(this.node.y) == this.initY) || (Math.floor(this.node.y) == this.initY) ) {
                 this.flag = true;
-            }        
+            }  
         }
         
     },

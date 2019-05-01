@@ -110,7 +110,7 @@
       "__id__": 1
     },
     "_enabled": true,
-    "pickRadius": 60,
+    "pickRadius": 100,
     "_id": ""
   },
   {

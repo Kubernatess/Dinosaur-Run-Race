@@ -4,8 +4,9 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        // 障碍物持续移动的时间
-        moveDuration: 0,
+        //障碍物持续移动的时间
+        moveDuration: 0,  
+        
         // 仙人掌预制资源
         cactusPrefab_1: {
             default: null,
@@ -71,10 +72,8 @@ cc.Class({
         },
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
     onLoad () {
-        // 获取地平面的 y 轴坐标
+        // 求得地平面的 y 轴坐标
         this.groundY = this.ground.y + this.ground.height/2;
         // 初始化计分
         this.score = 0;
@@ -86,34 +85,38 @@ cc.Class({
         this.controlHintLabel.string = hintText;
 
         // init game state
-        this.enabled = false;
+        this.state = false;
 
-        //初始化恐龙位置
-        this.dinosaur.setPosition(cc.v2(-this.node.width*3/8, this.groundY+this.dinosaur.height/2));
         //初始化障碍物
         this.obstacle = null;
+        //根据不同尺寸 设置不同大小
+        this.btnNode.setScale(this.node.width/960);
+        this.gameOverNode.setScale(this.node.width/960);
+        //设置恐龙初始位置
+        this.dinosaur.y=this.groundY;
+        
     },
 
     onStartGame: function () {
         // 初始化计分
         this.resetScore();
-          // set button and gameover text out of screen
+        // set button and gameover text out of screen
         this.btnNode.active = false;
         this.gameOverNode.active = false;
-        // reset player position and move speed
-        this.dinosaur.setPosition(cc.v2(-this.node.width*3/8, this.groundY+this.dinosaur.height/2));
         // 云朵开始运动
-        this.clouds.enabled = true;
-        // 地面也开始运动
-        this.ground.getComponent('Ground').enabled = true;
+        this.clouds.state = true;
+        // 地面开始运动
+        this.ground.getComponent('Ground').state = true;
+        // 调用恐龙的初始化方法,恐龙开始运动
+        this.dinosaur.getComponent('Dinosaur').init();
         // 把停留在GameOver那一刻的障碍物清除掉
         if(this.obstacle){
             this.obstacle.destroy();
         }
-        //spawn obstacle
+        //spawn newObstacle
         this.obstacle = this.spawnNewObstacle();
         // set game state to running
-        this.enabled = true;
+        this.state = true;
     },
 
     resetScore: function () {
@@ -132,15 +135,15 @@ cc.Class({
         var rand=Math.floor(Math.random()*4);
         // 随机将新增的节点添加到 Canvas 节点下面
         this.node.addChild(newObstacle[rand]);
-        // 为星星设置一个随机位置
+        // 为障碍物设置一个随机位置
         newObstacle[rand].setPosition(this.node.width,this.groundY);
-        // 设置障碍物的大小
-        newObstacle[rand].setScale(0.15);
+        //根据不同尺寸 设置障碍物大小
+        newObstacle[rand].setScale(this.node.width*0.15/960);
         // 设置锚点的Y轴坐标
         newObstacle[rand].anchorY=0;
         // 初始化移动动作
-        newObstacle[rand].moveAction = cc.moveTo(this.moveDuration, cc.v2(-this.node.width,this.groundY));
-        newObstacle[rand].runAction(newObstacle[rand].moveAction);
+        var moveAction = cc.moveTo(this.moveDuration, cc.v2(-this.node.width,this.groundY));
+        newObstacle[rand].runAction(moveAction);
         // 在仙人掌、蛋糕组件上暂存 Game 对象的引用
         newObstacle[rand].getComponent('Obstacle').game = this;
         return newObstacle[rand];
@@ -168,10 +171,10 @@ cc.Class({
 
     update (dt) {
         //判断物体是否被销毁了
-        if(this.obstacle.isValid == true){
+        if(this.obstacle){
             // 如果期间有物体正在移动,只允许有一个正在移动
             // 当物体移动出场景时
-            if(this.obstacle.x <= (-Math.round(this.node.width)||-Math.ceil(this.node.width)||-Math.floor(this.node.width))){         
+            if(this.obstacle.x-1 <= (-Math.round(this.node.width)||-Math.ceil(this.node.width)||-Math.floor(this.node.width))){         
                 //销毁障碍物
                 this.obstacle.destroy();
                 //重新渲染新物体
@@ -180,7 +183,7 @@ cc.Class({
                 this.flag = true;
             }
             
-            // 当该物体是仙人掌并且完全通过恐龙时,则加1分
+            // 当该物体是仙人掌并且刚好通过恐龙时,则加1分
             if ( (this.flag == true) && (this.obstacle.name!="cake") && (this.obstacle.x <= -(Math.ceil(this.node.width)||Math.floor(this.node.width))/2) ){
                 //标志位设为false,则恐龙成功躲避仙人掌时只能加一次分
                 this.flag = false;
