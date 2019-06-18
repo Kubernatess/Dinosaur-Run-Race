@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+</head>
+
+<body>
+<canvas id="canvas" height="650" width="600" style="background:yellow">您的浏览器当前版本不支持canvas标签</canvas>
+<script>
+var canvas=document.getElementById('canvas');
+//设置2d绘图环境
+var cxt=canvas.getContext('2d');
+//创建图片对象
+var img_clouds =new Image();
+img_clouds.src="clouds.jpg";
+var img_Cactus1=new Image();
+img_Cactus1.src="Cactus1.jpg";
+var img_Cactus2=new Image();
+img_Cactus2.src="Cactus2.jpg";
+var img_Cactus3=new Image();
+img_Cactus3.src="Cactus3.jpg";
+var img_cake=new Image();
+img_cake.src="cake.jpg";
+var imgs=[img_Cactus1,img_Cactus2,img_Cactus3,img_cake];
+var x=0;
+var y=0;
+var z=0;
+var rand=Math.floor(Math.random()*4);
+var img_dinasour=new Image();
+img_dinasour.src="dinasour.jpg";
+var img_dinasour2=new Image();
+img_dinasour2.src="dinasour2.jpg";
+var img_dinasour3=new Image();
+img_dinasour3.src="dinasour3.jpg";
+var imgs_dinasour=[img_dinasour2,img_dinasour3];
+var t=410;
+var tag=-1;
+var trigger=false;
+function draw(){
+	//画云彩
+	cxt.drawImage(img_clouds,x,50,650,240);
+		x-=1;
+		if(Math.abs(x)==650){
+			x=550;
+		}	
+	//画仙人掌、蛋糕
+	cxt.drawImage(imgs[rand],y,272,650,315);
+		y-=5;
+		if(Math.abs(y)==650){
+			y=500;
+			rand=Math.floor(Math.random()*4);
+		}
+	//画恐龙
+	if(trigger==false){
+	cxt.drawImage(imgs_dinasour[z],20,430,80,80);
+		if(z==0){
+			z=1;
+		}//来回切换恐龙脚步
+		else z=0;
+	}
+		
+	//恐龙跳跃
+	if(trigger){
+		cxt.drawImage(img_dinasour,20,t,80,80);
+		t=t+5*tag;
+		if(t==250){
+			tag=1;
+		}
+		if(t==410){
+			tag=-1;	
+			trigger=false;
+			cxt.drawImage(imgs_dinasour[z],20,410,80,80);
+			if(z==0){
+				z=1;
+			}
+			else z=0;		
+		}
+	}		
+};
+setInterval(draw,10);
+
+window.onkeypress=function(event){
+	var e = event || window.event || arguments.callee.caller.arguments[0];
+	//当按下空格键时触发恐龙跳跃
+	if(e && e.keyCode==32){
+		trigger=true;
+	}
+}
+
+</script>
+</body>
+</html>

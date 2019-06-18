@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ether planet</title>
+</head>
+
+<body>
+<canvas id="canvas" height="856" width="900" style="background:yellow">您的浏览器当前版本不支持canvas标签</canvas>
+<script>
+var canvas=document.getElementById('canvas');
+var cxt=canvas.getContext('2d');
+
+var img =new Image();
+img.src="cover3.jpg";
+img.onload=function(){  
+    cxt.drawImage(img,20,30,800,756);
+	//画一个空心矩形
+	cxt.lineWidth=5;
+	cxt.fillStyle="grey";
+	cxt.strokeRect(340,500,150,70);
+	//画一个实心矩形
+	cxt.fillStyle="blue"; 
+	cxt.fillRect(340,500,150,70); 
+	//填充文字
+	cxt.fillStyle="#FFF";
+	cxt.font="40px 微软雅黑";//css font属性
+	cxt.fillText("PLAY",365,550);
+		}; 
+cxt.drawImage(img,20,30,800,756);
+
+</script>
+</body>
+</html>
