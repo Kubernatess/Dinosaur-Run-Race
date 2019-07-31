@@ -1,0 +1,33 @@
+响应式  移动端 触屏  
+
+捡到蛋糕特效  scorePool
+
+DragonBones
+
+start onload方法 
+
+优化代码  var变量、this变量  变量命名
+
+set/get属性方法
+
+恐龙动画 动画事件
+
+碰撞系统
+
+widget组件
+
+if (person!=null && person!="")
+
+Math.max()
+
+双目运算符  ?: 
+
+长按空格问题
+
+好友排名
+
+moveBy moveTo
+
+变量的解构赋值
+
+选择难度
