@@ -1,0 +1,47 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "anim",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 6.016666666666667,
+  "sample": 60,
+  "speed": 0.5,
+  "wrapMode": 2,
+  "curveData": {
+    "paths": {
+      "Cloud": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": 487.894
+            },
+            {
+              "frame": 5,
+              "value": -428.331
+            }
+          ]
+        }
+      },
+      "Horizon": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": 1055.879
+            },
+            {
+              "frame": 6,
+              "value": -1065.909
+            },
+            {
+              "frame": 6.016666666666667,
+              "value": -1649.287
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}
