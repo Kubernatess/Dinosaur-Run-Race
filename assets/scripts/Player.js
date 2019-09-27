@@ -24,7 +24,7 @@ cc.Class({
         if(cc.sys.isMobile){
             // 开启触屏监听
             let touchReceiver = cc.Canvas.instance.node;
-            touchReceiver.on('touch', this.setJumpAction, this);
+            touchReceiver.on(cc.Node.EventType.TOUCH_START, this.setJumpAction, this);
         }    
         else{ //开启键盘监听            
             cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -36,7 +36,7 @@ cc.Class({
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         // 取消触屏监听
         let touchReceiver = cc.Canvas.instance.node;
-        touchReceiver.off('touch', this.setJumpAction, this);
+        touchReceiver.off(cc.Node.EventType.TOUCH_START, this.setJumpAction, this);
     },
 
     setJumpAction: function () {
