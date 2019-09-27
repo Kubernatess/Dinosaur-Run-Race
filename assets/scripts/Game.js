@@ -20,8 +20,11 @@ cc.Class({
             default: null,
             type: cc.Label
         },
-        // 得分音效资源
         scoreAudio: {
+            default: null,
+            type: cc.AudioClip
+        },
+        backgroundAudio: {
             default: null,
             type: cc.AudioClip
         },
@@ -50,12 +53,14 @@ cc.Class({
         this.score = 0;
         // initialize control hint
         this.initHint();
-        // 初始化游戏状态,通常用来保护未初始化的节点
-        this.state = false;
-        // 用在游戏一开始的时候判断enemy节点是否有效,避免报错
-        this.enemy = new cc.Node();
-        // 游戏一开始就把暂存game变量
+        // 游戏一开始就把暂存game变量,player至少要在start阶段才能获取到game属性
         this.player.getComponent('Player').game=this;
+        // 播放背景音乐
+        cc.audioEngine.playEffect(this.backgroundAudio, true);
+        // 用在游戏一开始的时候判断enemy节点是否有效,避免报错
+        this.enemy = cc.instantiate(this.enemyPrefab);
+        // initialize enemy pool
+        this.enemyPool = new cc.NodePool('Enemy');
     },
 
     initHint () {
@@ -67,44 +72,35 @@ cc.Class({
     },
 
     onStartGame () {         
-        // 开启游戏
-        this.state = true;
         // 初始化计分
-        this.resetScore();
-        // set button and gameover text out of screen
-        this.btnNode.active = false;
-        this.gameOverNode.active = false;
-        // 播放背景动画
-        this.anim.play('anim');   
-        //
-        this.player.getComponent('Player').GetReady();
-        // 把停留在GameOver那一刻的障碍物清除掉
-        if(this.enemy.isValid){
-            this.enemy.destroy();
-        }        
-        //spawn newEnemy
-        this.enemy = this.spawnNewEnemy(); 
-    },
-
-    resetScore () {
         this.score = 0;
         this.scoreDisplay.string = 'Score: ' + this.score.toString();
+        // set button and gameover text out of screen
+        this.btnNode.active = false;
+        this.gameOverNode.active = false;        
+        // 生成新敌人
+        this.spawnNewEnemy();       
+        // 主角准备就绪
+        this.player.getComponent('Player').GetReady();
+        // 播放背景动画
+        this.anim.play('anim');   
     },
 
     spawnNewEnemy () {
-        // 创建一个数组,存放预制资源纹理的名称
-        let textures = ["cactus1","cactus2","cactus3","cake"];
-        // 随机生成0--3的整数
-        let rand=Math.floor(Math.random()*4);
-        //实例化敌人
-        let newEnemy = cc.instantiate(this.enemyPrefab);
+        // 先把当前的敌人销毁掉,然后再生成新敌人
+        this.enemyPool.put(this.enemy);
+        // 使用给定的模板在场景中生成一个新节点
+        let newEnemy = this.enemyPool.get();
         // 将新增的节点添加到 Canvas 节点下面
         this.node.addChild(newEnemy);
-        // 设置纹理集
-        newEnemy.getComponent('Enemy').setTexture(textures[rand]);       
-        // 在敌人组件上暂存 Game 对象的引用
-        newEnemy.getComponent('Enemy').GetReady(this);
-        return newEnemy;
+        // 对敌人进行初始化操作
+        newEnemy.getComponent('Enemy').init(this);
+        // 切换新的纹理
+        newEnemy.getComponent('Enemy').setTexture();
+        // 保存最新的敌人
+        this.enemy = newEnemy;
+        // 每次有新的敌人出现,记得开启主角状态
+        this.player.getComponent('Player').state = true;
     },
 
     gainScore (score) {
@@ -115,14 +111,18 @@ cc.Class({
         cc.audioEngine.playEffect(this.scoreAudio, false);
     },
 
-    gameOver () {
+    gameOver () {       
+        this.node.stopAllActions();
+        // 关闭游戏状态,避免浪费内存资源
+        this.enemy.getComponent('Enemy').state = false;
+        this.player.getComponent('Player').state = false;
+        this.player.stopAllActions();
+        // 取消主角动作监听
+        this.player.getComponent('Player').onDestroy(); 
+        // 暂停背景动画
+        this.anim.pause();      
         this.gameOverNode.active = true;
         this.btnNode.active = true;
-        this.node.stopAllActions();
-        this.enemy.getComponent('Enemy').state = false;
-        this.player.stopAllActions();
-        this.player.getComponent('Player').onDestroy(); 
-        this.anim.pause();      
     }
 
 });

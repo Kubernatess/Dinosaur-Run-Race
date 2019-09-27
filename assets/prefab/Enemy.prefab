@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Cactus1",
+    "_name": "Enemy",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -40,8 +40,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 734,
-      "height": 439
+      "width": 416,
+      "height": 436
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -118,9 +118,9 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "8b11f10f-224a-4d51-80c7-bb9eaa8da28b"
+      "__uuid__": "9df0b9bf-03b5-4e89-b3ec-36fe897cd6e6"
     },
-    "fileId": "dcZFuU+QZIzbwLmFgeH/7N",
+    "fileId": "6cE9qiaUpBrJG1e5ifGu6b",
     "sync": false
   }
 ]
